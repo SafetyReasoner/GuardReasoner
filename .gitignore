@@ -1,0 +1,29 @@
+# PyTorch & TensorFlow Generated Files
+wandb/
+mlruns/
+tensorboard/
+lightning_logs/
+*.pt.trace.json
+
+# Google Colab / Jupyter Notebook Specific
+.colab/
+.ipynb_checkpoints/
+
+# VS Code & Other IDEs
+.vscode/
+*.code-workspace
+
+# Miscellaneous
+*.bak
+*.orig
+*.rej
+
+# Ignore annotations & large datasets
+/data
+
+*.log
+*.err
+*.out
+
+# exceptions
+error_analysis.txt
