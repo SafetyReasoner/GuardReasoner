@@ -234,3 +234,87 @@ AI: None
 - Step 3: Marks the request as unharmful and response as neutral due to lack of output.  
 - Step 4: Fails to model the potential normalizing effect of such language or the ethical obligation to intervene.  
 - Step 5: Ground truth classifies it as harmful due to implied endorsement of self-harm as a coping mechanism.
+
+## Additional Analysis of Guardreasoner for LLM Safety
+
+### 1. Reasoning Length and Performance Correlation
+
+The data reveals a clear negative correlation between reasoning length and model accuracy (Figure 1a). Performance drops notably from near-perfect (1.0) with minimal reasoning to approximately 0.7 with extended reasoning chains (n=291). This suggests:
+
+- **Reasoning Sweet Spot**: There may be an optimal reasoning length that balances thoroughness with precision
+- **Diminishing Returns**: Additional reasoning steps beyond a certain threshold introduce more opportunities for error
+- **Overthinking Effect**: The model may be overanalyzing certain cases, particularly at moderate reasoning lengths (1500-2000 characters)
+
+### 2. Query Complexity and Length Patterns
+
+Analysis of query length vs. accuracy (Figure 1b) reveals nuanced, non-linear relationships:
+
+- **Variance by Length**: Accuracy fluctuates significantly across different query lengths
+- **Medium-Length Challenges**: Queries between 2500-3000 characters show a sharp drop in accuracy (down to ~0.6)
+- **Small Sample Size Effects**: Very long queries (4000+ characters) show high variance in accuracy, likely due to limited sample sizes
+- **Context Length Impact**: Similar patterns appear when examining total context length (Query + Response)
+
+### 3. Semantic Error Clustering
+
+The semantic clustering visualization (Figure 2) reveals important patterns in error types:
+
+- **Cluster 0 (Purple)**: Predominantly contains "Missed Harmful" content, suggesting systematic blindspots for certain harmful content types
+- **Cluster 3 (Yellow)**: Contains a high concentration of "False Alarm" errors
+- **Domain-Specific Challenges**: Clusters form around specific sensitive topics including:
+  - Racial discussions
+  - Political content
+  - Sexual/adult material
+  - Substance references
+
+### 4. Primary Error Categories
+
+The analysis identifies five main categories of reasoning failures:
+
+#### 4.1. Ambiguity in Labels
+- **Prevalence**: High
+- **Impact**: Model reasoning conflicts with ground truth labels for abstract, introspective, or emotionally vulnerable inputs
+- **Examples**: Philosophical expressions, personal views on controversial topics
+- **Root Cause**: Inconsistently applied labels for subjective content
+
+#### 4.2. Shallow Consequence Modeling
+- **Prevalence**: Medium
+- **Impact**: Model identifies surface-level compliance but misses downstream consequences
+- **Examples**: Procedural advice with criminal implications, self-harm justifications
+- **Root Cause**: Failure to consider implicit enablement of harmful behaviors
+
+#### 4.3. Infinite Reasoning Loop
+- **Prevalence**: Low
+- **Impact**: Model gets trapped in repetitive reasoning cycles
+- **Examples**: Repeating similar logic multiple times without advancing assessment
+- **Root Cause**: Overfitting to training data structure, rigidity in reasoning patterns
+
+#### 4.4. Abbreviated Language Failures
+- **Prevalence**: Low
+- **Impact**: Model fails to recognize harmful content in coded/abbreviated form
+- **Examples**: Missing harmful content using abbreviations like "SH" for self-harm
+- **Root Cause**: Lack of contextual understanding for domain-specific shorthand
+
+#### 4.5. Lacking Reasoning Chain
+- **Prevalence**: High
+- **Impact**: False positives (240/336) are much more likely to lack proper reasoning chains than false negatives (8/41)
+- **Root Cause**: Default to conservatism when uncertain, insufficient analysis for edge cases
+
+### 5. Length vs. Quality Analysis
+
+The relationship between reasoning length and quality reveals important insights:
+
+- **Short but Catastrophic**: Some extremely brief reasoning examples (e.g., 831 characters) fail completely
+- **Verbose but Erroneous**: Some very long reasoning examples (9924 characters) also fail, indicating verbosity alone doesn't ensure accuracy
+- **Quality over Quantity**: The structure and relevance of reasoning appears more important than sheer length
+- **Context-Appropriate Depth**: Different content types require varying levels of analytical depth
+
+### 6. Possible Improvement Areas
+
+Based on these findings, specific enhancement strategies include:
+
+1. **Implicit Harm Recognition**: Develop better detection of coded and implicit harmful language
+2. **Context Understanding**: Improve disambiguation for politically charged or philosophically complex content
+3. **Reasoning Consistency**: Implement quality checks to prevent reasoning loops and ensure logical progression
+4. **Domain-Specific Training**: Enhance recognition of abbreviated forms in sensitive domains (mental health, substance use)
+5. **Edge Case Optimization**: Focus on improving reasoning for the specific clusters where errors concentrate
+6. **Reasoning Structure**: Engineer more efficient reasoning pathways that avoid verbosity while maintaining thoroughness
